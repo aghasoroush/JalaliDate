@@ -233,14 +233,15 @@ class Jalali
 		if (empty($this->gregorian))
 			$this->gregorian = $this->getGregorian();
 
+		$unit        = (int) $unit;
 		$formatStart = 'P';
 
 		if (in_array($designator, array('H', 'M', 'S')))
 			$formatStart .= 'T';
 
-		$this->gregorian = (int) $unit < 0
-			? $this->gregorian->add(new \DateInterval("{$formatStart}{$unit}$designator"))
-			: $this->gregorian->sub(new \DateInterval("{$formatStart}{$unit}$designator"));
+		$this->gregorian = (int) $unit >= 0
+			? $this->gregorian->add(new \DateInterval("{$formatStart}{$unit}{$designator}"))
+			: $this->gregorian->sub(new \DateInterval("{$formatStart}" . abs((int) $unit) . "{$designator}"));
 
 		$this->getJalali($this->gregorian);
 		return $this;
