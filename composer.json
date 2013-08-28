@@ -1,7 +1,7 @@
 {
     "name": "ez-util/jalali-date",
     "type": "library",
-    "description": "",
+    "description": "Jalali calendar conversion to gregorian and vise versa.",
     "keywords": ["jalali calendar"],
     "homepage": "https://github.com/mehdone/JalaliDate",
     "license": "GNU LGPL v3",
