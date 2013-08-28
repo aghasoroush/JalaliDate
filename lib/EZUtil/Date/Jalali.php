@@ -61,15 +61,27 @@ class Jalali
 	}
 
 	/**
-	 * @param \DateTime $date
+	 * @param \DateTime $gregorian
 	 * @return Jalali
 	 */
-	public function getJalali(\DateTime $date)
+	public function setGregorianDate(\DateTime $gregorian)
 	{
-		$this->gregorian = $date;
-		$gYear           = (int) $this->gregorian->format('Y') - 1600;
-		$gMonth          = (int) $this->gregorian->format('m') - 1;
-		$gDay            = (int) $this->gregorian->format('d') - 1;
+		$this->gregorian = $gregorian;
+		return $this;
+	}
+
+	/**
+	 * @return Jalali
+	 * @throws DateException
+	 */
+	public function getJalali()
+	{
+		if (empty($this->gregorian))
+			throw new DateException('No gregorian date has been provided yet.');
+
+		$gYear  = (int) $this->gregorian->format('Y') - 1600;
+		$gMonth = (int) $this->gregorian->format('m') - 1;
+		$gDay   = (int) $this->gregorian->format('d') - 1;
 
 		$gDayNumber = 365 * $gYear
 			+ $this->divide($gYear + 3, 4)
@@ -115,9 +127,13 @@ class Jalali
 
 	/**
 	 * @return \DateTime
+	 * @throws DateException
 	 */
 	public function getGregorian()
 	{
+		if (empty($this->year) || empty($this->month) || empty($this->day))
+			throw new DateException('No jalali date has been provided yet.');
+
 		$jy         = $this->year - 979;
 		$jm         = $this->month - 1;
 		$jd         = $this->day - 1;
@@ -197,7 +213,6 @@ class Jalali
 
 	/**
 	 * This method adds a number units to the current date value.
-	 * The supported values for the designator argument are <Y, M, D, W>
 	 * For more information about the designator argument, please refer to the provided link.
 	 *
 	 * @param int    $unit
@@ -212,13 +227,18 @@ class Jalali
 		if (empty($this->gregorian) && (empty($this->year) || empty($this->month) || empty($this->day)))
 			throw new DateException('No date is yet available to add units to it.');
 
-		if (!in_array($designator, array('Y', 'M', 'D', 'W')))
+		if (!in_array($designator, array('Y', 'M', 'D', 'W', 'H', 'M', 'S')))
 			throw new DateException('The provided designator parameter is not supported for Jalali dates.');
 
 		if (empty($this->gregorian))
 			$this->gregorian = $this->getGregorian();
 
-		$this->gregorian = $this->gregorian->add(new \DateInterval("P{$unit}$designator"));
+		$formatStart = 'P';
+
+		if (in_array($designator, array('H', 'M', 'S')))
+			$formatStart .= 'T';
+
+		$this->gregorian = $this->gregorian->add(new \DateInterval("{$formatStart}{$unit}$designator"));
 		$this->getJalali($this->gregorian);
 		return $this;
 	}
