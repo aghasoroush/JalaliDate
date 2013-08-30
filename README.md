@@ -9,7 +9,7 @@ echo $date->setGregorianDate(new \DateTime())->getJalali()->format('Y/m/d');
 
 As you may have noticed, you can use [PHP's standard date format characters](http://php.net/manual/en/function.date.php) to format your Jalali date. Isn't that cool?
 
-### Convert Jalali calendar calendar date to Gregorian
+### Convert Jalali calendar date to Gregorian
 
 ```
 $date = new Jalali(1392, 6, 6);
