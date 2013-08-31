@@ -50,3 +50,11 @@ echo $date->add(1, 'W')->format('Y/m/d');
 Again if you've noticed, [PHP's standard DateInterval characters](http://www.php.net/manual/en/dateinterval.construct.php) are used to add units of date/time to the Jalali date.
 
 You can also use *negative values* for the unit being added to the Jalali date to subtract the amount of date/time from the Jalali date if you need to navigate backward in time.
+
+### Convert TIMESTAMP to a Jalali calendar date
+```
+$date = new Jalali();
+echo $date->setTimestamp(time())->getJalali()->format('Y/m/d');
+```
+
+It was that simple. All you need to do to convert a timestamp

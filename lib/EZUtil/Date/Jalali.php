@@ -26,6 +26,11 @@
 
 namespace EZUtil\Date;
 
+/**
+ * Class Jalali
+ * @package EZUtil\Date
+ * @author  Mehdi Bakhtiari <mehdone@gmail.com>
+ */
 class Jalali
 {
 	/**
@@ -68,6 +73,22 @@ class Jalali
 	{
 		$this->gregorian = $gregorian;
 		return $this;
+	}
+
+	/**
+	 * @param int $timestamp
+	 * @throws DateException In case an invalid timestamp is provided.
+	 * @return Jalali
+	 */
+	public function setTimestamp($timestamp)
+	{
+		if ((int) $timestamp > 0) {
+			$this->gregorian = new \DateTime();
+			$this->gregorian->setTimestamp((int) $timestamp);
+			return $this;
+		}
+
+		throw new DateException('Invalid timestamp is provided.');
 	}
 
 	/**
