@@ -26,7 +26,7 @@ $date = new Jalali();
 echo $date->setGregorianDate(new \DateTime())->getJalali()->format('w, d F Y');
 ```
 
-This looks like pretty much like the above code. All I have done is that I have provided a different format string ```w, d F Y```
+This looks pretty much like the above code. All I have done is that I have provided a different format string ```w, d F Y```
 
 ### Adding units of date/time to the Jalali calendar date
 To add a number of years/months/days/hours/minutes/seconds to the converted Jalali date you can use the ```add()``` method.
