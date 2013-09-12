@@ -29,27 +29,35 @@ echo $date->setGregorianDate(new \DateTime())->getJalali()->format('w, d F Y');
 This looks pretty much like the above code. All I have done is that I have provided a different format string ```w, d F Y```
 
 ### Adding units of date/time to the Jalali calendar date
-To add a number of years/months/days/hours/minutes/seconds to the converted Jalali date you can use the ```add()``` method.
+To add a number of years/months/days/hours/minutes/seconds to the converted Jalali date you can use the ```add*()``` methods.
 
-This method accepts two arguments. The first one is the number of units to add to the date and the second one is the date/time designator character.
+These methods accept the amount of date/time to add/subtract from the Jalali date. 
 
 Let's say you want to add 7 days to the current date.
 
 ```
 $date = new Jalali(1392, 6, 6);
-echo $date->add(7, 'D')->format('Y/m/d');
+echo $date->addDays(7)->format('Y/m/d');
 ```
 
 You could also do it like this:
 
 ```
 $date = new Jalali(1392, 6, 6);
-echo $date->add(1, 'W')->format('Y/m/d');
+echo $date->addWeeks(1)->format('Y/m/d');
 ```
 
-Again if you've noticed, [PHP's standard DateInterval characters](http://www.php.net/manual/en/dateinterval.construct.php) are used to add units of date/time to the Jalali date.
-
 You can also use *negative values* for the unit being added to the Jalali date to subtract the amount of date/time from the Jalali date if you need to navigate backward in time.
+
+Below is a list of available add*() methods:
+
+* addYears
+* addMonths
+* addDays
+* addWeeks
+* addDays
+* addMinutes
+* addSeconds
 
 ### Convert TIMESTAMP to a Jalali calendar date
 ```
