@@ -21,6 +21,11 @@
 
 namespace EZUtil\Date;
 
+/**
+ * Class JalaliFormat
+ * @package EZUtil\Date
+ * @author  Mehdi Bakhtiari <mehdone@gmail.com>
+ */
 class JalaliFormat
 {
 	public static $JALALI_MONTHS = array(

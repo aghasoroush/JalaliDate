@@ -24,10 +24,11 @@ namespace EZUtil\Date;
 /**
  * Class DateException
  * @package Beep\Exception
+ * @author  Mehdi Bakhtiari <mehdone@gmail.com>
  */
 class DateException extends \Exception
 {
-	function __construct($message)
+	public function __construct($message)
 	{
 		parent::__construct($message);
 	}

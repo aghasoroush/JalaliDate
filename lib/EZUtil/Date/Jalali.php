@@ -26,6 +26,11 @@
 
 namespace EZUtil\Date;
 
+/**
+ * Class Jalali
+ * @package EZUtil\Date
+ * @author  Mehdi Bakhtiari <mehdone@gmail.com>
+ */
 class Jalali
 {
 	/**
@@ -53,7 +58,7 @@ class Jalali
 	 */
 	protected $weekDay;
 
-	function __construct($year = null, $month = null, $day = null)
+	public function __construct($year = null, $month = null, $day = null)
 	{
 		$this->year  = $year;
 		$this->month = $month;
@@ -71,11 +76,30 @@ class Jalali
 	}
 
 	/**
+	 * @param int $timestamp
+	 * @throws DateException In case an invalid timestamp is provided.
+	 * @return Jalali
+	 */
+	public function setTimestamp($timestamp)
+	{
+		if ((int) $timestamp > 0) {
+			$this->gregorian = new \DateTime();
+			$this->gregorian->setTimestamp((int) $timestamp);
+			return $this;
+		}
+
+		throw new DateException('Invalid timestamp is provided.');
+	}
+
+	/**
 	 * @return Jalali
 	 * @throws DateException
 	 */
 	public function getJalali()
 	{
+		if (empty($this->gregorian) && !empty($this->year) && !empty($this->month) && !empty($this->day))
+			return $this;
+
 		if (empty($this->gregorian))
 			throw new DateException('No gregorian date has been provided yet.');
 
@@ -111,12 +135,6 @@ class Jalali
 
 		$jMonth = $i + 1;
 		$jDay   = $jDayNumber + 1;
-
-		if ($jMonth < 10)
-			$jMonth = "0" . $jMonth;
-
-		if ($jDay < 10)
-			$jDay = "0" . $jDay;
 
 		$this->year    = $jYear;
 		$this->month   = $jMonth;
@@ -185,7 +203,7 @@ class Jalali
 	}
 
 	/**
-	 * This method accepts a combination of standard date format characters, including <d, j, w, m, F, y, Y>
+	 * This method accepts a combination of standard date format characters, including <d, j, w, n, m, F, y, Y>
 	 *
 	 * @param string $format
 	 * @link http://php.net/manual/en/function.date.php
@@ -201,10 +219,11 @@ class Jalali
 		if (empty($this->weekDay))
 			$this->weekDay = $this->getGregorian()->format('w');
 
-		$format = str_replace('d', $this->day, $format);
-		$format = str_replace('j', ((int) $this->day), $format);
+		$format = str_replace('d', $this->day < 10 ? '0' . $this->day : $this->day, $format);
+		$format = str_replace('j', $this->day, $format);
 		$format = str_replace('w', JalaliFormat::$WEEK_DAYS[(int) $this->weekDay], $format);
-		$format = str_replace('m', $this->month, $format);
+		$format = str_replace('n', $this->month, $format);
+		$format = str_replace('m', $this->month < 10 ? '0' . $this->month : $this->month, $format);
 		$format = str_replace('F', JalaliFormat::$JALALI_MONTHS[(int) $this->month - 1], $format);
 		$format = str_replace('y', substr($this->year, 2, 2), $format);
 		$format = str_replace('Y', $this->year, $format);
@@ -212,39 +231,80 @@ class Jalali
 	}
 
 	/**
-	 * This method adds a number units to the current date value.
-	 * For more information about the designator argument, please refer to the provided link.
+	 * Passing negative values will subtract from the Jalali date.
 	 *
-	 * @param int    $unit
-	 * @param string $designator
-	 * @link http://www.php.net/manual/en/dateinterval.construct.php
-	 *
+	 * @param int $unit
 	 * @return Jalali
-	 * @throws DateException
 	 */
-	public function add($unit, $designator = 'D')
+	public function addYears($unit)
 	{
-		if (empty($this->gregorian) && (empty($this->year) || empty($this->month) || empty($this->day)))
-			throw new DateException('No date is yet available to add units to it.');
+		return $this->addDuration($unit, false, 'Y');
+	}
 
-		if (!in_array($designator, array('Y', 'M', 'D', 'W', 'H', 'M', 'S')))
-			throw new DateException('The provided designator parameter is not supported for Jalali dates.');
+	/**
+	 * Passing negative values will subtract from the Jalali date.
+	 *
+	 * @param int $unit
+	 * @return Jalali
+	 */
+	public function addMonths($unit)
+	{
+		return $this->addDuration($unit, false, 'M');
+	}
 
-		if (empty($this->gregorian))
-			$this->gregorian = $this->getGregorian();
+	/**
+	 * Passing negative values will subtract from the Jalali date.
+	 *
+	 * @param int $unit
+	 * @return Jalali
+	 */
+	public function addDays($unit)
+	{
+		return $this->addDuration($unit, false, 'D');
+	}
 
-		$unit        = (int) $unit;
-		$formatStart = 'P';
+	/**
+	 * Passing negative values will subtract from the Jalali date.
+	 *
+	 * @param int $unit
+	 * @return Jalali
+	 */
+	public function addWeeks($unit)
+	{
+		return $this->addDuration($unit, false, 'W');
+	}
 
-		if (in_array($designator, array('H', 'M', 'S')))
-			$formatStart .= 'T';
+	/**
+	 * Passing negative values will subtract from the Jalali date.
+	 *
+	 * @param int $unit
+	 * @return Jalali
+	 */
+	public function addHours($unit)
+	{
+		return $this->addDuration($unit, true, 'H');
+	}
 
-		$this->gregorian = (int) $unit >= 0
-			? $this->gregorian->add(new \DateInterval("{$formatStart}{$unit}{$designator}"))
-			: $this->gregorian->sub(new \DateInterval("{$formatStart}" . abs((int) $unit) . "{$designator}"));
+	/**
+	 * Passing negative values will subtract from the Jalali date.
+	 *
+	 * @param int $unit
+	 * @return Jalali
+	 */
+	public function addMinutes($unit)
+	{
+		return $this->addDuration($unit, true, 'M');
+	}
 
-		$this->getJalali($this->gregorian);
-		return $this;
+	/**
+	 * Passing negative values will subtract from the Jalali date.
+	 *
+	 * @param int $unit
+	 * @return Jalali
+	 */
+	public function addSeconds($unit)
+	{
+		return $this->addDuration($unit, true, 'S');
 	}
 
 	/**
@@ -269,6 +329,54 @@ class Jalali
 	public function getDay()
 	{
 		return $this->day;
+	}
+
+	/**
+	 * It is advised NOT to invoke this method directly. Instead this method should be utilized
+	 * by calling the addDuration() method.
+	 *
+	 * In case it is calling this method seems to be the only option, please follow the provided link
+	 * to find about how to provide a valid interval spec string.
+	 * @link http://www.php.net/manual/en/dateinterval.construct.php
+	 *
+	 * @param string $intervalSpec
+	 * @param bool   $add
+	 * @return Jalali
+	 * @throws DateException
+	 */
+	protected function add($intervalSpec, $add = true)
+	{
+		if (empty($this->gregorian) && (empty($this->year) || empty($this->month) || empty($this->day)))
+			throw new DateException('No date is yet available to add units to it.');
+
+		if (empty($this->gregorian))
+			$this->gregorian = $this->getGregorian();
+
+		$this->gregorian = (int) $add
+			? $this->gregorian->add(new \DateInterval($intervalSpec))
+			: $this->gregorian->sub(new \DateInterval($intervalSpec));
+
+		$this->getJalali($this->gregorian);
+		return $this;
+	}
+
+	/**
+	 * This method adds an amount of date/time to the desired Jalali date.
+	 * Passing negative values to $unit will cause subtraction from the Jalali date.
+	 *
+	 * To find out about the valid list of designator characters please follow the provided link.
+	 * @link http://www.php.net/manual/en/dateinterval.construct.php
+	 *
+	 * @param int    $unit
+	 * @param bool   $isTime
+	 * @param string $designator
+	 * @return Jalali
+	 */
+	protected function addDuration($unit, $isTime, $designator)
+	{
+		$unit         = (int) $unit;
+		$intervalSpec = 'P' . (((bool) $isTime) ? 'T' : '') . abs($unit) . $designator;
+		return $this->add($intervalSpec, $unit > 0);
 	}
 
 	/**
