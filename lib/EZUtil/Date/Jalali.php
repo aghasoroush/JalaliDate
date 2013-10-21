@@ -76,6 +76,23 @@ class Jalali
 	}
 
 	/**
+	 * @param string $date The date to be provided MUST be Y/m/d
+	 * @param string $delimiter
+	 * @throws \Exception
+	 * @return Jalali
+	 */
+	public function setJalaliDate($date, $delimiter = '/')
+	{
+		$date = explode($delimiter, $date);
+
+		if (count($date) != 3)
+			throw new \Exception('Malformed jalali date is provided');
+
+		list($this->year, $this->month, $this->day) = $date;
+		return $this;
+	}
+
+	/**
 	 * @param int $timestamp
 	 * @throws DateException In case an invalid timestamp is provided.
 	 * @return Jalali
@@ -97,7 +114,7 @@ class Jalali
 	 */
 	public function getJalali()
 	{
-		if (empty($this->gregorian) && !empty($this->year) && !empty($this->month) && !empty($this->day))
+		if (!empty($this->year) && !empty($this->month) && !empty($this->day))
 			return $this;
 
 		if (empty($this->gregorian))
