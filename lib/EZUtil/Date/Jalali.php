@@ -92,13 +92,15 @@ class Jalali
 	}
 
 	/**
-	 * @return Jalali
+	 * @param bool $recalculate
 	 * @throws DateException
+	 * @return Jalali
 	 */
-	public function getJalali()
+	public function getJalali($recalculate = false)
 	{
-		if (empty($this->gregorian) && !empty($this->year) && !empty($this->month) && !empty($this->day))
-			return $this;
+		if (!$recalculate)
+			if (empty($this->gregorian) && !empty($this->year) && !empty($this->month) && !empty($this->day))
+				return $this;
 
 		if (empty($this->gregorian))
 			throw new DateException('No gregorian date has been provided yet.');
@@ -203,7 +205,8 @@ class Jalali
 	}
 
 	/**
-	 * This method accepts a combination of standard date format characters, including <d, j, w, n, m, F, y, Y>
+	 * This method accepts a combination of standard date format characters,
+	 * including <s, i, h, H, g, G, d, j, w, n, m, F, y, Y>
 	 *
 	 * @param string $format
 	 * @link http://php.net/manual/en/function.date.php
@@ -227,6 +230,12 @@ class Jalali
 		$format = str_replace('F', JalaliFormat::$JALALI_MONTHS[(int) $this->month - 1], $format);
 		$format = str_replace('y', substr($this->year, 2, 2), $format);
 		$format = str_replace('Y', $this->year, $format);
+		$format = str_replace('s', $this->gregorian->format('s'), $format);
+		$format = str_replace('i', $this->gregorian->format('i'), $format);
+		$format = str_replace('h', $this->gregorian->format('h'), $format);
+		$format = str_replace('H', $this->gregorian->format('H'), $format);
+		$format = str_replace('g', $this->gregorian->format('g'), $format);
+		$format = str_replace('G', $this->gregorian->format('G'), $format);
 		return $format;
 	}
 
@@ -332,6 +341,22 @@ class Jalali
 	}
 
 	/**
+	 * @param int $weekDay
+	 */
+	public function setWeekDay($weekDay)
+	{
+		$this->weekDay = $weekDay;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getWeekDay()
+	{
+		return $this->weekDay;
+	}
+
+	/**
 	 * It is advised NOT to invoke this method directly. Instead this method should be utilized
 	 * by calling the addDuration() method.
 	 *
@@ -356,7 +381,7 @@ class Jalali
 			? $this->gregorian->add(new \DateInterval($intervalSpec))
 			: $this->gregorian->sub(new \DateInterval($intervalSpec));
 
-		$this->getJalali($this->gregorian);
+		$this->getJalali(true);
 		return $this;
 	}
 
