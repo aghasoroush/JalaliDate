@@ -76,6 +76,33 @@ class Jalali
 	}
 
 	/**
+	 * Sets the jalali date for the further calculations and conversions.
+	 * To provide a valid jalali date a YYYY MM DD formatted date should
+	 * be passed to the $date param.
+	 *
+	 * @param string $date
+	 * @param string $delimiter
+	 * @throws \Exception In case an invalid date is provided
+	 * @return Jalali
+	 */
+	public function setJalaliDate($date, $delimiter = '/')
+	{
+		$date = explode($delimiter, $date);
+
+		if (count($date) != 3)
+			throw new \Exception('Invalid jalali date provided.');
+
+		foreach ($date as $datePart)
+			if (!is_numeric($datePart) || strlen(trim($datePart)) < 1)
+				throw new \Exception('Invalid jalali date provided.');
+
+		$this->year  = $date[0];
+		$this->month = $date[1];
+		$this->day   = $date[2];
+		return $this;
+	}
+
+	/**
 	 * @param int $timestamp
 	 * @throws DateException In case an invalid timestamp is provided.
 	 * @return Jalali
