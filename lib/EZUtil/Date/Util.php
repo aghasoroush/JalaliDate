@@ -22,51 +22,37 @@
 namespace EZUtil\Date;
 
 /**
- * Class JalaliFormat
+ * Class Util
  * @package EZUtil\Date
- * @author  Mehdi Bakhtiari <mehdone@gmail.com>
+ * @author  Mehdi Bakhtiari
  */
-class JalaliFormat
+class Util
 {
-	public static $JALALI_MONTHS = array(
-		'فروردین',
-		'اردیبهشت',
-		'خرداد',
-		'تیر',
-		'مرداد',
-		'شهریور',
-		'مهر',
-		'آبان',
-		'آذر',
-		'دی',
-		'بهمن',
-		'اسفند',
-	);
-
-	public static $WEEK_DAYS = array(
-		'يكشنبه',
-		'دوشنبه',
-		'سه شنبه',
-		'چهارشنبه',
-		'پنجشنبه',
-		'جمعه',
-		'شنبه');
-
-	public static $GREGORIAN_MONTH_DAYS = array(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
-	public static $JALALI_MONTH_DAYS = array(31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29);
+	/**
+	 * @param string      $date1
+	 * @param string      $date2
+	 * @param string|null $delimiter
+	 * @param string      $designator
+	 * @return int
+	 */
+	public static function diff($date1, $date2, $delimiter = '/', $designator = '%a')
+	{
+		$jalali = new Jalali();
+		$date1  = $jalali->setJalaliDate($date1, $delimiter)->getGregorian();
+		$date2  = $jalali->setJalaliDate($date2, $delimiter)->getGregorian();
+		return (int) $date2->diff($date1)->format($designator);
+	}
 
 	/**
-	 * Returns the zero-based index of the provided month
-	 *
-	 * @param string $month
-	 * @return int|null
+	 * @param int    $maxDiff
+	 * @param string $date1
+	 * @param string $date2
+	 * @param string $delimiter
+	 * @param string $designator
+	 * @return bool
 	 */
-	public static function getMonthIndex($month)
+	public static function checkMaxDiff($maxDiff, $date1, $date2, $delimiter = '/', $designator = '%a')
 	{
-		for ($i = 0; $i < count(self::$JALALI_MONTHS); $i++)
-			if (self::$JALALI_MONTHS[$i] === $month)
-				return $i;
-
-		return null;
+		return static::diff($date1, $date2, $delimiter, $designator) > $maxDiff;
 	}
 }
