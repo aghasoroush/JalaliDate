@@ -53,6 +53,6 @@ class Util
 	 */
 	public static function checkMaxDiff($maxDiff, $date1, $date2, $delimiter = '/', $designator = '%a')
 	{
-		return static::diff($date1, $date2, $delimiter, $designator) > $maxDiff;
+		return static::diff($date1, $date2, $delimiter, $designator) <= $maxDiff;
 	}
 }
