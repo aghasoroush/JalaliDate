@@ -236,7 +236,6 @@ class Jalali
 	 * This method returns the timestamp equivalent of Gregorian date
 	 * If you want more accurate timestamp, you should use addHour and...
 	 *
-	 *
 	 * @throws DateException
 	 * @return string
 	 */
