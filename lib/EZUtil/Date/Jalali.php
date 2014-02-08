@@ -230,6 +230,23 @@ class Jalali
 
 		return new \DateTime("{$gy}/{$gm}/{$gd}");
 	}
+	
+	
+	/**
+	 * This method returns the timestamp equivalent of Gregorian date
+	 * If you want more accurate timestamp, you should use addHour and...
+	 *
+	 *
+	 * @throws DateException
+	 * @return string
+	 */
+	public function getTimestamp()
+	{
+		if (empty($this->year) || empty($this->month) || empty($this->day))
+			throw new DateException('No jalali date has been provided yet.');
+			
+		return $this->getGregorian()->format('U');
+	}
 
 	/**
 	 * This method accepts a combination of standard date format characters,
